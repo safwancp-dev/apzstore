@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your E-commerce Store</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700&display=swap" rel="stylesheet" />
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="/css/slick.css" />
+    <link type="text/css" rel="stylesheet" href="/css/slick-theme.css" />
+    <link type="text/css" rel="stylesheet" href="/css/nouislider.min.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" href="/css/style.css" />
+
+    <style>
+      /* Banner Carousel Enhancements */
+      .home-carousel {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+      .banner-item {
+        position: relative;
+        height: 400px;
+        color: #fff;
+      }
+      .banner-item img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        filter: brightness(0.7);
+        border-radius: 10px;
+      }
+      .banner-caption {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 700px;
+        text-align: center;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+      }
+      .primary-btn {
+        background: #ff6f61;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: white;
+        border-radius: 30px;
+        transition: background 0.0s ease;
+        text-decoration: none;
+      }
+      .primary-btn:hover {
+        background: #ff3b2d;
+        text-decoration: none;
+        color: white;
+      }
+
+      /* Slick Dots Custom */
+      .slick-dots {
+        bottom: 15px;
+      }
+      .slick-dots li button:before {
+        font-size: 12px;
+        color: #fff;
+        opacity: 0.75;
+      }
+      .slick-dots li.slick-active button:before {
+        color: #ff6f61;
+        opacity: 1;
+      }
+
+      /* Slick Arrows */
+      .slick-arrow {
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        z-index: 10;
+      }
+      .slick-arrow:before {
+        color: white;
+        font-size: 20px;
+      }
+      .slick-prev {
+        left: 15px;
+      }
+      .slick-next {
+        right: 15px;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .banner-item {
+          height: 250px;
+        }
+        .banner-item img {
+          height: 250px;
+        }
+        .banner-caption h3 {
+          font-size: 1.6rem;
+        }
+        .banner-caption p {
+          font-size: 1rem;
+        }
+        .primary-btn {
+          font-size: 1rem;
+          padding: 10px 20px;
+        }
+      }
+    </style>
+</head>
+<body>
+
+  <%- include('partials/header') %>
+  <%- include('partials/navbar') %>
+
+  <!-- Banner Carousel Section -->
+  <div class="section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="home-carousel">
+            <% if (banners && banners.length > 0) { %>
+              <% banners.forEach(banner => { %>
+                <% banner.imageUrls.forEach(image => { %>
+                  <div class="banner-item">
+                    <img src="<%= image %>" alt="Banner Image" />
+                    <div class="banner">
+                      <% if (banner.title) { %>
+                        <h3><%= banner.title %></h3>
+                      <% } %>
+                      <% if (banner.description) { %>
+                        <p><%= banner.description %></p>
+                      <% } %>
+                      <% if (banner.linkUrl) { %>
+                        <a href="<%= banner.linkUrl %>" class="primary-btn">Shop Now</a>
+                      <% } %>
+                    </div>
+                  </div>
+                <% }) %>
+              <% }) %>
+            <% } else { %>
+              <p>No banners available.</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop Categories -->
+  <div class="section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 col-xs-6">
+          <div class="shop">
+            <div class="shop-img">
+              <img src="/img/shop01.png" alt="" />
+            </div>
+            <div class="shop-body">
+              <h3>MobilePhone<br />Collection</h3>
+              <a href="/shop" class="cta-btn">Shop now <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-xs-6">
+          <div class="shop">
+            <div class="shop-img">
+              <img src="/img/shop03.png" alt="" />
+            </div>
+            <div class="shop-body">
+              <h3>MacBook<br />Collection</h3>
+              <a href="/shop" class="cta-btn">Shop now <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-xs-6">
+          <div class="shop">
+            <div class="shop-img">
+              <img src="/img/shop02.png" alt="" />
+            </div>
+            <div class="shop-body">
+              <h3>SmartWatch<br />Collection</h3>
+              <a href="/shop" class="cta-btn">Shop now <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Selling Section -->
+  <div class="section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 col-xs-6">
+          <div class="section-title">
+            <h4 class="title">Top Selling</h4>
+            <div class="section-nav">
+              <div id="slick-nav-3" class="products-slick-nav"></div>
+            </div>
+          </div>
+          <div class="products-widget-slick" data-nav="#slick-nav-3">
+            <div>
+              <div class="product-widget">
+                <div class="product-img">
+                  <img src="/img/product01.png" alt="" />
+                </div>
+                <div class="product-body">
+                  <p class="product-category">MobilePhone</p>
+                  <h3 class="product-name"><a href="/shop">iPhone 16 Pro</a></h3>
+                  <h4 class="product-price">$100000</h4>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="product-widget">
+                <div class="product-img">
+                  <img src="/img/product07.png" alt="" />
+                </div>
+                <div class="product-body">
+                  <p class="product-category">Laptop</p>
+                  <h3 class="product-name"><a href="/shop">MacBook Pro</a></h3>
+                  <h4 class="product-price">$100000</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional sections can go here -->
+
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <!-- JS Scripts -->
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/slick.min.js"></script>
+  <script src="/js/nouislider.min.js"></script>
+  <script src="/js/jquery.zoom.min.js"></script>
+  <script src="/js/main.js"></script>
+
+  <!-- Slick Carousel Script -->
+  <script>
+    $(document).ready(function () {
+      $('.home-carousel').slick({
+        autoplay: true,
+        autoplaySpeed: 4000,       // Slide changes every 4 seconds
+        speed: 1000,               // Slide transition animation speed (1 second)
+        fade: true,                // Fade effect
+        cssEase: 'linear',         // Linear easing for smooth fade
+        dots: true,
+        arrows: true,
+        infinite: true,
+        pauseOnHover: true,
+        pauseOnFocus: true,
+        adaptiveHeight: true
+      });
+    });
+  </script>
+</body>
+</html>

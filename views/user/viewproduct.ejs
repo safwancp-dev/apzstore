@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>
+    <%= product.name %> - Product Details
+  </title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easyzoom@2.5.0/css/easyzoom.css" />
+
+  <style>
+    .product-detail-container {
+      padding: 30px 0;
+    }
+
+    .main-image-container {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .main-img {
+      width: 100%;
+      height: auto;
+      max-height: 450px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .thumbnail-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+
+    .thumbnail-img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 1px solid #eee;
+      border-radius: 3px;
+      transition: border 0.2s ease;
+    }
+
+    .thumbnail-img:hover {
+      border-color: #007bff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-info h2 {
+      margin-bottom: 10px;
+    }
+
+    .product-info p strong {
+      font-weight: 500;
+    }
+
+    .price {
+      font-size: 1.5rem;
+      color: #28a745;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .add-to-cart-btn {
+      font-size: 1.1rem;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+    }
+
+    .wishlist-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 15px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 1rem;
+    }
+
+    .wishlist-btn.added {
+      color: red;
+      font-weight: bold;
+    }
+
+    .review-form {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 40px;
+    }
+
+    .review-stars i {
+      font-size: 1.5rem;
+      color: #ccc;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .review-stars i.selected,
+    .review-stars i:hover,
+    .review-stars i.hover {
+      color: #ffc107;
+    }
+
+    textarea.form-control {
+      resize: none;
+    }
+
+    .card-body h6 {
+      font-weight: bold;
+    }
+
+    .card-body .fa-star {
+      margin-right: 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <%- include('partials/header') %>
+    <%- include('partials/navbar') %>
+      <div class="section product-detail-container">
+        <div class="container">
+          <div class="row">
+
+            <div class="col-md-6">
+              <div class="mb-3 main-image-container easyzoom easyzoom--overlay">
+                <a href="<%= product.image[0] %>">
+                  <img id="mainImage" src="<%= product.image[0] %>" class="img-fluid main-img"
+                    alt="<%= product.name %>">
+                </a>
+              </div>
+              <div class="thumbnail-gallery">
+                <% product.image.forEach((img, index)=> { %>
+                  <img src="<%= img %>" class="thumbnail-img"
+                    onclick="document.getElementById('mainImage').src = this.src" alt="Thumbnail <%= index + 1 %>">
+                  <% }) %>
+              </div>
+            </div>
+
+
+
+
+            <div class="col-md-6 product-info">
+              <h2>
+                <%= product.name %>
+              </h2>
+              <p class="price">$<%= product.price %>
+              </p>
+              <p><strong>Category:</strong>
+                <%= product.category.name %>
+              </p>
+              <p>
+                <%= product.description %>
+              </p>
+
+              <% if(user) { %>
+                <button id="addCartBtn" class="btn btn-success add-to-cart-btn" data-product="<%= product._id %>">
+                  <i class="fa fa-shopping-cart"></i> Add to Cart
+                </button>
+
+                <button id="wishlistBtn"
+                  class="wishlist-btn <%= wishlistItems.includes(product._id.toString()) ? 'added' : '' %>"
+                  data-product="<%= product._id %>"
+                  data-action="<%= wishlistItems.includes(product._id.toString()) ? 'remove' : 'add' %>">
+                  <i class="fa <%= wishlistItems.includes(product._id.toString()) ? 'fa-heart' : 'fa-heart-o' %>"></i>
+                  <span>
+                    <%= wishlistItems.includes(product._id.toString()) ? 'Remove from Wishlist' : 'Add to Wishlist' %>
+                  </span>
+                </button>
+                <% } else { %>
+                  <button id="addCartBtn" class="btn btn-success add-to-cart-btn" data-product="<%= product._id %>">
+                    <i class="fa fa-shopping-cart"></i> Add to Cart
+                  </button>
+                  <a href="/login" class="btn btn-outline-danger wishlist-btn">
+                    <i class="fa fa-heart-o"></i> Add to Wishlist
+                  </a>
+                  <% } %>
+                    <% if(user) { %>
+                      <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                          <form id="reviewForm" class="review-form">
+                            <h4>Write a Review</h4>
+                            <div class="form-group review-stars">
+                              <% for(let i=1; i<=5; i++){ %>
+                                <i class="fa fa-star" data-value="<%= i %>"></i>
+                                <% } %>
+                                  <input type="hidden" name="rating" id="ratingInput" value="0">
+                            </div>
+                            <div class="form-group">
+                              <label for="comment">Comment</label>
+                              <textarea name="comment" id="comment" rows="4" class="form-control"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                          </form>
+                        </div>
+                      </div>
+                      <% } %>
+
+                      <div class="row mt-5">
+  <div class="col-md-8 offset-md-2">
+    <h4 class="mb-4">
+      Users Reviews
+      <span class="badge bg-primary"><%= product.reviews ? product.reviews.length : 0 %></span>
+    </h4>
+
+    <% if(product.reviews && product.reviews.length > 0) { %>
+      <div class="list-group">
+        <% product.reviews.forEach(review => { %>
+          <div class="list-group-item list-group-item-action flex-column align-items-start mb-4 p-4 shadow rounded-3 border-0 bg-light">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+              <h6 class="mb-0 fw-semibold text-dark">
+                <%= review.user?.name || 'Anonymous' %>
+              </h6>
+              <div>
+                <% for(let i=1; i<=5; i++){ %>
+                  <i class="fa fa-star <%= i <= review.rating ? 'text-warning' : 'text-muted' %>"></i>
+                <% } %>
+              </div>
+            </div>
+
+            <p class="mt-3 mb-2 text-body">
+              <%= review.comment %>
+            </p>
+
+            <% if (review.createdAt) { %>
+              <small class="text-muted d-block text-end">Reviewed on: <%= new Date(review.createdAt).toLocaleDateString() %></small>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="alert alert-info d-flex align-items-center" role="alert">
+        <i class="fa fa-info-circle me-2"></i> Be the first to review this product!
+      </div>
+    <% } %>
+  </div>
+</div>
+            </div>
+          </div>
+
+          
+
+        </div>
+      </div>
+      </div>
+      </div>
+
+      <script src="/js/jquery.min.js"></script>
+      <script src="/js/bootstrap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/easyzoom@2.5.0/dist/easyzoom.js"></script>
+
+      <script>
+        toastr.options = {
+          closeButton: true,
+          progressBar: true,
+          positionClass: "toast-top-right",
+          timeOut: "3000",
+        };
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+          const addCartBtn = document.getElementById('addCartBtn');
+          const wishlistBtn = document.getElementById('wishlistBtn');
+
+          if (addCartBtn) {
+            addCartBtn.addEventListener('click', async () => {
+              const productId = addCartBtn.dataset.product;
+              try {
+                const res = await fetch(`/add-to-cart/${productId}`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.success) {
+                  toastr.success(data.message || 'Added to cart!');
+                  addCartBtn.disabled = true;
+                  addCartBtn.innerHTML = '<i class="fa fa-check"></i> Added';
+                } else {
+                  toastr.warning(data.message || 'Could not add to cart');
+                }
+              } catch (err) {
+                toastr.error('Error adding to cart');
+                console.error(err);
+              }
+            });
+          }
+
+          if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', async () => {
+              const productId = wishlistBtn.dataset.product;
+              const action = wishlistBtn.dataset.action; // 'add' or 'remove'
+              try {
+                const res = await fetch(`/wishlist/${action}/${productId}`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                  if (action === 'add') {
+                    wishlistBtn.dataset.action = 'remove';
+                    wishlistBtn.classList.add('added');
+                    wishlistBtn.innerHTML = '<i class="fa fa-heart"></i> Remove from Wishlist';
+                    toastr.success(data.message || 'Added to wishlist');
+                  } else {
+                    wishlistBtn.dataset.action = 'add';
+                    wishlistBtn.classList.remove('added');
+                    wishlistBtn.innerHTML = '<i class="fa fa-heart-o"></i> Add to Wishlist';
+                    toastr.success(data.message || 'Removed from wishlist');
+                  }
+                } else {
+                  toastr.warning(data.message || 'Wishlist action failed');
+                }
+              } catch (err) {
+                toastr.error('Error updating wishlist');
+                console.error(err);
+              }
+            });
+          }
+
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+          const easyZoomInstance = $('.easyzoom').easyZoom();
+
+          // Thumbnail click updates main image and zoom source
+          document.querySelectorAll('.thumbnail-img').forEach((thumb) => {
+            thumb.addEventListener('click', function () {
+              const mainImage = document.getElementById('mainImage');
+              const newSrc = this.src;
+              const parentAnchor = mainImage.closest('a');
+              mainImage.src = newSrc;
+              parentAnchor.href = newSrc;
+
+              // Reinitialize zoom with new image
+              easyZoomInstance.data('easyZoom').swap(newSrc, newSrc);
+            });
+          });
+          // Star rating script
+          const stars = document.querySelectorAll('.review-stars i');
+          const ratingInput = document.getElementById('ratingInput');
+
+          stars.forEach((star, idx) => {
+            star.addEventListener('click', () => {
+              ratingInput.value = star.dataset.value;
+              stars.forEach((s, i) => {
+                s.classList.toggle('selected', i <= idx);
+              });
+            });
+
+            star.addEventListener('mouseover', () => {
+              stars.forEach((s, i) => {
+                s.classList.toggle('hover', i <= idx);
+              });
+            });
+
+            star.addEventListener('mouseout', () => {
+              stars.forEach(s => s.classList.remove('hover'));
+            });
+          });
+        });
+
+        // Review form AJAX submit
+        const reviewForm = document.getElementById('reviewForm');
+        if (reviewForm) {
+          reviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rating = document.getElementById('ratingInput').value;
+            const comment = document.getElementById('comment').value;
+            const productId = "<%= product._id %>";
+
+            try {
+              const res = await fetch(`/review/${productId}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rating, comment })
+              });
+              const data = await res.json();
+
+              if (res.ok) {
+                toastr.success("Review submitted successfully!");
+                setTimeout(() => {
+                  location.reload();
+                }, 1500);
+              } else {
+                toastr.warning(data.message || 'Review submission failed.');
+              }
+            } catch (err) {
+              console.error(err);
+              toastr.error('Server error occurred.');
+            }
+          });
+        }
+
+        // Star Rating logic
+        const stars = document.querySelectorAll('.review-stars i');
+        const ratingInput = document.getElementById('ratingInput');
+
+        stars.forEach((star, idx) => {
+          star.addEventListener('click', () => {
+            ratingInput.value = star.dataset.value;
+            stars.forEach((s, i) => {
+              s.classList.toggle('selected', i <= idx);
+            });
+          });
+
+          star.addEventListener('mouseover', () => {
+            stars.forEach((s, i) => {
+              s.classList.toggle('hover', i <= idx);
+            });
+          });
+
+          star.addEventListener('mouseout', () => {
+            stars.forEach(s => s.classList.remove('hover'));
+          });
+        });
+
+
+
+
+      </script>
+
+
+
+
+</body>
+
+</html>
